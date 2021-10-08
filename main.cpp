@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 #include "number.h"
 #include "number.cpp"
 #include "fraction.h"
@@ -46,6 +47,9 @@ int main(int argc, char* argv[]) {
         RunGenerator(argc, argv);
         return 0;
     }
+    double startingtime = (double)clock();
+    startingtime = startingtime / CLOCKS_PER_SEC;
+
     char* inputpath;
     char* outputpath;
 
@@ -59,7 +63,7 @@ int main(int argc, char* argv[]) {
     double first;
     double second;
 
-    number numbers[1000];
+    number numbers[3000];
     char* errors;
     int counter = 0;
     while (fscanf(inputfile, "%d %lf %lf", &type, &first, &second) != EOF) {
@@ -70,7 +74,7 @@ int main(int argc, char* argv[]) {
             errors = strcat(errors, error);
             continue;
         }
-        if (counter == 999) {
+        if (counter == 3000) {
             char error[100];
             snprintf(error, 99, "Amount of numbers in file exceeded maximum of 1000.\n");
             errors = strcat(errors, error);
@@ -81,10 +85,12 @@ int main(int argc, char* argv[]) {
         counter++;
     }
     LogError(errors);
+    delete errors;
     fclose(inputfile);
 
     BubbleSort(numbers, counter);
 
+    printf("Program finished in %f seconds.\n", (double)(clock())/CLOCKS_PER_SEC - startingtime);
     if (argc == 2) {
         printf("\nPrinting results to console, (%d lines)\n", counter);
         PrintResultsToConsole(numbers, counter);
@@ -94,7 +100,7 @@ int main(int argc, char* argv[]) {
     }
     return 0;
 }
-
+//dasddasdsasd
 void LogError(char* errors) {
     if (!errors)
         return;

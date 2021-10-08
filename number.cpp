@@ -26,7 +26,7 @@ number* In(int k, double first, double second) {
             In(num->cd, first, second);
             return num;
         default:
-            return 0;
+            return new number;
     }
 }
 
