@@ -15,7 +15,7 @@ void In(fraction &f, double numenator, double denominator) {
 //------------------------------------------------------------------------------
 // Вывод параметров дроби в строку
 char* Out(fraction &f) {
-    char* outstr = new char[100];
+    char* outstr = (char*)malloc(sizeof(char)*100);
     snprintf(outstr, 99, "Fraction %f/%f - %f", f.numenator, f.denominator, ConvertToReal(f));
     return outstr;
 }

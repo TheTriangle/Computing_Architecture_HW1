@@ -15,7 +15,7 @@ void In(coordinates &c, double angle, double value) {
 //------------------------------------------------------------------------------
 // ¬ывод параметров координат в строку
 char* Out(coordinates &c) {
-    char* outstr = new char[100];
+    char* outstr = (char*)malloc(sizeof(char)*100);
     snprintf(outstr, 99, "Coordinates (%f; %f) - %f", c.angle, c.value, ConvertToReal(c));
     return outstr;
 }

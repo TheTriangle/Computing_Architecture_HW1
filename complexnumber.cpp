@@ -16,7 +16,7 @@ void In(complexnumber &c, double real, double imaginary) {
 //------------------------------------------------------------------------------
 // Вывод параметров комплексного числа в строку
 char* Out(complexnumber &c) {
-    char* outstr = new char[100];
+    char* outstr = (char*)malloc(sizeof(char)*100);
     snprintf(outstr, 99, "Complex number (%f; %f) - %f", c.real, c.imaginary, ConvertToReal(c));
     return outstr;
 }

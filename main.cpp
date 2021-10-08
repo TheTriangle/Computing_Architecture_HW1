@@ -5,6 +5,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <time.h>
@@ -85,7 +86,6 @@ int main(int argc, char* argv[]) {
         counter++;
     }
     LogError(errors);
-    delete errors;
     fclose(inputfile);
 
     BubbleSort(numbers, counter);
