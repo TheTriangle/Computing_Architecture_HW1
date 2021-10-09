@@ -10,7 +10,6 @@
 #include <math.h>
 #include <time.h>
 #include "number.h"
-#include "number.cpp"
 #include "fraction.h"
 #include "fraction.cpp"
 #include "complexNumber.h"
@@ -18,11 +17,12 @@
 #include "coordinates.h"
 #include "coordinates.cpp"
 #include "TestsGenerator.cpp"
+#include "deck.h"
+#include "deck.cpp"
 
 
-void BubbleSort(number* numbers, int n);
-void PrintResultsToConsole(number* numbers, int n);
-void PrintResultsToFile(number* numbers, int n, char* outputpath);
+void PrintResultsToConsole(deck numbers);
+void PrintResultsToFile(deck numbers, char* outputpath);
 void LogError(char* errors);
 
 
@@ -64,12 +64,13 @@ int main(int argc, char* argv[]) {
     double first;
     double second;
 
-    number numbers[3000];
+    deck numbers;
     char* errors;
     int counter = 0;
     while (fscanf(inputfile, "%d %lf %lf", &type, &first, &second) != EOF) {
-        if ((type == 2) && (fabs(second) < 0.00001)) {
+        if ((type == 1) && (fabs(second) < 0.00001)) {
             char error[100];
+            printf("WHAAAAA\n");
             snprintf(error, 99, "A provided fraction has a zero denumenator"
                                                   "(line %d)\n", counter + 1);
             errors = strcat(errors, error);
@@ -82,21 +83,20 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        numbers[counter] = *In(type, first, second);
+        number newnum = *In(type, first, second);
+        PushFront(numbers, newnum);
         counter++;
     }
-    LogError(errors);
     fclose(inputfile);
-
-    BubbleSort(numbers, counter);
+    BubbleSort(numbers);
 
     printf("Program finished in %f seconds.\n", (double)(clock())/CLOCKS_PER_SEC - startingtime);
     if (argc == 2) {
         printf("\nPrinting results to console, (%d lines)\n", counter);
-        PrintResultsToConsole(numbers, counter);
+        PrintResultsToConsole(numbers);
     } else {
         printf("\nWriting results to file (%s)\n", outputpath);
-        PrintResultsToFile(numbers, counter, outputpath);
+        PrintResultsToFile(numbers, outputpath);
     }
     return 0;
 }
@@ -112,31 +112,16 @@ void LogError(char* errors) {
     fclose(logfile);
 }
 
-void PrintResultsToConsole(number* numbers, int n) {
-    for(int i = 0; i < n; i++) {
-        printf("%s\n", Out(numbers[i]));
+void PrintResultsToConsole(deck numbers) {
+    while(Size(numbers) != 0) {
+        printf("%s\n", Out(PopBack(numbers)));
     }
 }
 
-void PrintResultsToFile(number* numbers, int n, char* outputpath) {
+void PrintResultsToFile(deck numbers, char* outputpath) {
     FILE* outputfile = fopen(outputpath, "w");
-    for(int i = 0; i < n; i++) {
-        fprintf(outputfile, "%s", Out(numbers[i]));
-        fprintf(outputfile, "\n");
+    while(Size(numbers) != 0) {
+        fprintf(outputfile, "%s\n", Out(PopBack(numbers)));
     }
     fclose(outputfile);
 }
-
-
-void BubbleSort(number* numbers, int n) {
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - i - 1; j++) {
-            if (ConvertToReal(numbers[j]) > ConvertToReal(numbers[j + 1])) {
-                number intermed = numbers[j];
-                numbers[j] = numbers[j + 1];
-                numbers[j + 1] = intermed;
-            }
-        }
-    }
-}
-

@@ -32,5 +32,6 @@ char* ToString(number &s);
 // ѕриведение обобщенного числа к действительному
 double ConvertToReal(number &n);
 
+#include "number.cpp"
 #endif
 
