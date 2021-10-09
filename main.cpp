@@ -21,8 +21,8 @@
 #include "deck.cpp"
 
 
-void PrintResultsToConsole(deck numbers);
-void PrintResultsToFile(deck numbers, char* outputpath);
+void PrintResultsToConsole(deck numbers, FILE* input, int amount);
+void PrintResultsToFile(deck numbers, char* outputpath, FILE* input, int amount);
 void LogError(char* errors);
 
 
@@ -76,11 +76,6 @@ int main(int argc, char* argv[]) {
             errorsrisen = true;
             continue;
         }
-        if (counter == 3000) {
-            fprintf(errorslog, "Amount of numbers in file exceeded maximum of 1000.\n");
-            errorsrisen = true;
-            break;
-        }
 
         number newnum = *In(type, first, second);
         PushFront(numbers, newnum);
@@ -89,30 +84,56 @@ int main(int argc, char* argv[]) {
     if (errorsrisen)
         printf("Errors produced during program execution. Check errors.log for further info\n");
     fclose(errorslog);
-    fclose(inputfile);
     BubbleSort(numbers);
 
     printf("Program finished in %f seconds.\n", (double)(clock())/CLOCKS_PER_SEC - startingtime);
     if (argc == 2) {
         printf("\nPrinting results to console, (%d lines)\n", counter);
-        PrintResultsToConsole(numbers);
+        PrintResultsToConsole(numbers, inputfile, counter);
     } else {
         printf("\nWriting results to file (%s)\n", outputpath);
-        PrintResultsToFile(numbers, outputpath);
+        PrintResultsToFile(numbers, outputpath, inputfile, counter);
     }
+    fclose(inputfile);
     return 0;
 }
 
-void PrintResultsToConsole(deck numbers) {
+void PrintResultsToConsole(deck numbers, FILE* input, int amount) {
+    printf("Given input file:\n"
+           "---------------------------------------------------------\n");
+    rewind(input);
+    int c;
+    while ((c = getc(input)) != EOF)
+        printf("%c", c);
+
+    printf("\n"
+           "---------------------------------------------------------\n\n"
+           "Output:\n");
+
     while(Size(numbers) != 0) {
         printf("%s\n", Out(PopBack(numbers)));
     }
+
+    printf("\n%d lines in total.", amount);
 }
 
-void PrintResultsToFile(deck numbers, char* outputpath) {
+void PrintResultsToFile(deck numbers, char* outputpath, FILE* input, int amount) {
     FILE* outputfile = fopen(outputpath, "w");
+
+    fprintf(outputfile, "Given input file:\n"
+           "---------------------------------------------------------\n");
+    rewind(input);
+    int c;
+    while ((c = getc(input)) != EOF)
+        fprintf(outputfile, "%c", c);
+
+    fprintf(outputfile, "\n"
+           "---------------------------------------------------------\n\n"
+           "Output:\n");
+
     while(Size(numbers) != 0) {
         fprintf(outputfile, "%s\n", Out(PopBack(numbers)));
     }
+    fprintf(outputfile, "\n%d lines in total.", amount);
     fclose(outputfile);
 }
