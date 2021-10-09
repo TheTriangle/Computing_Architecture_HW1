@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
-// main.cpp - содержит главную функцию,
-// обеспечивающую простое тестирование
+// main.cpp - СЃРѕРґРµСЂР¶РёС‚ РіР»Р°РІРЅСѓСЋ С„СѓРЅРєС†РёСЋ,
+// РѕР±РµСЃРїРµС‡РёРІР°СЋС‰СѓСЋ РїСЂРѕСЃС‚РѕРµ С‚РµСЃС‚РёСЂРѕРІР°РЅРёРµ
 //------------------------------------------------------------------------------
 
 
@@ -26,7 +26,7 @@ void PrintResultsToFile(deck numbers, char* outputpath);
 void LogError(char* errors);
 
 
-// условие 11, обработка 12
+// РЈСЃР»РѕРІРёРµ 11, РѕР±СЂР°Р±РѕС‚РєР° 12
 int main(int argc, char* argv[]) {
     if (argc == 1) {
         printf("Run main <input.txt> to specify input file \n"
@@ -60,6 +60,7 @@ int main(int argc, char* argv[]) {
     }
 
     FILE* inputfile = fopen(inputpath, "r");
+    FILE* errorslog = fopen("errors.log", "w");
     int type;
     double first;
     double second;
@@ -67,19 +68,17 @@ int main(int argc, char* argv[]) {
     deck numbers;
     char* errors;
     int counter = 0;
+    bool errorsrisen = false;
     while (fscanf(inputfile, "%d %lf %lf", &type, &first, &second) != EOF) {
         if ((type == 1) && (fabs(second) < 0.00001)) {
-            char error[100];
-            printf("WHAAAAA\n");
-            snprintf(error, 99, "A provided fraction has a zero denumenator"
+            fprintf(errorslog, "A provided fraction has a zero denumenator"
                                                   "(line %d)\n", counter + 1);
-            errors = strcat(errors, error);
+            errorsrisen = true;
             continue;
         }
         if (counter == 3000) {
-            char error[100];
-            snprintf(error, 99, "Amount of numbers in file exceeded maximum of 1000.\n");
-            errors = strcat(errors, error);
+            fprintf(errorslog, "Amount of numbers in file exceeded maximum of 1000.\n");
+            errorsrisen = true;
             break;
         }
 
@@ -87,6 +86,9 @@ int main(int argc, char* argv[]) {
         PushFront(numbers, newnum);
         counter++;
     }
+    if (errorsrisen)
+        printf("Errors produced during program execution. Check errors.log for further info\n");
+    fclose(errorslog);
     fclose(inputfile);
     BubbleSort(numbers);
 
@@ -99,17 +101,6 @@ int main(int argc, char* argv[]) {
         PrintResultsToFile(numbers, outputpath);
     }
     return 0;
-}
-//dasddasdsasd
-void LogError(char* errors) {
-    if (!errors)
-        return;
-    if (strcmp(errors, ""))
-        return;
-    printf("There were errors during program execution. See errors.log for further detail\n");
-    FILE* logfile = fopen("errors.log", "w");
-    fprintf(logfile, "%s", errors);
-    fclose(logfile);
 }
 
 void PrintResultsToConsole(deck numbers) {
