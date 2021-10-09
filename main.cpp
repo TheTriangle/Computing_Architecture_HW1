@@ -60,32 +60,34 @@ int main(int argc, char* argv[]) {
     }
 
     FILE* inputfile = fopen(inputpath, "r");
+    FILE* errorslog = fopen("errors.log", "w");
     int type;
     double first;
     double second;
 
     number numbers[3000];
-    char* errors;
+
     int counter = 0;
+    bool errorsrisen = false;
     while (fscanf(inputfile, "%d %lf %lf", &type, &first, &second) != EOF) {
-        if ((type == 2) && (fabs(second) < 0.00001)) {
-            char error[100];
-            snprintf(error, 99, "A provided fraction has a zero denumenator"
+        if ((type == 1) && (fabs(second) < 0.00001)) {
+            fprintf(errorslog, "A provided fraction has a zero denumenator"
                                                   "(line %d)\n", counter + 1);
-            errors = strcat(errors, error);
+            errorsrisen = true;
             continue;
         }
         if (counter == 3000) {
-            char error[100];
-            snprintf(error, 99, "Amount of numbers in file exceeded maximum of 1000.\n");
-            errors = strcat(errors, error);
+            fprintf(errorslog, "Amount of numbers in file exceeded maximum of 1000.\n");
+            errorsrisen = true;
             break;
         }
 
         numbers[counter] = *In(type, first, second);
         counter++;
     }
-    LogError(errors);
+    if (errorsrisen)
+        printf("Errors produced during program execution. Check errors.log for further info\n");
+    fclose(errorslog);
     fclose(inputfile);
 
     BubbleSort(numbers, counter);
@@ -99,17 +101,6 @@ int main(int argc, char* argv[]) {
         PrintResultsToFile(numbers, counter, outputpath);
     }
     return 0;
-}
-//dasddasdsasd
-void LogError(char* errors) {
-    if (!errors)
-        return;
-    if (strcmp(errors, ""))
-        return;
-    printf("There were errors during program execution. See errors.log for further detail\n");
-    FILE* logfile = fopen("errors.log", "w");
-    fprintf(logfile, "%s", errors);
-    fclose(logfile);
 }
 
 void PrintResultsToConsole(number* numbers, int n) {
